@@ -21,7 +21,7 @@ $stats_users = $db->query("SELECT COUNT(*) as count FROM users WHERE role = 'use
 
 include 'includes/header.php';
 ?>
-
+<h1>Chieu thu hai -ca4 </h1>
 <section class="hero-section">
     <div class="hero-overlay"></div>
     <div class="hero-content">
