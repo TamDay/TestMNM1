@@ -9,10 +9,10 @@ class Database {
     private $conn;
     
     // Thông tin kết nối database
-    private $host = 'sql100.infinityfree.com';
-    private $db_name = 'if0_40629702_meetingroom';
-    private $username = 'if0_40629702';
-    private $password = 'vusDuUqwHV8';
+    private $host = 'sql112.infinityfree.com';
+    private $db_name = 'if0_40684890_meetingroom';
+    private $username = 'if0_40684890';
+    private $password = 'WwqgguTFEz';
     private $charset = 'utf8mb4';
     
     // Private constructor để implement Singleton
