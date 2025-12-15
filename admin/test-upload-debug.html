@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Lab Upload - Debug</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+            color: #333;
+        }
+
+        .upload-zone {
+            border: 3px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-zone:hover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
+        }
+
+        .upload-zone.dragover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-primary:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .btn-outline {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .file-list-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            margin: 1.5rem 0;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #f7fafc;
+            transition: background 0.2s;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-item:hover {
+            background: #f7fafc;
+        }
+
+        .file-icon {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.25rem;
+        }
+
+        .file-size {
+            font-size: 0.875rem;
+            color: #718096;
+        }
+
+        .file-remove {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .file-remove:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
+        .log {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f0f0f0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.875rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            margin: 0.25rem 0;
+        }
+
+        .log-success {
+            color: green;
+        }
+
+        .log-error {
+            color: red;
+        }
+
+        .log-info {
+            color: blue;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🧪 Test Lab Upload System</h1>
+
+        <div class="upload-zone" id="dropZone">
+            <div class="upload-icon">📤</div>
+            <div class="upload-text">Kéo & thả files vào đây</div>
+            <div class="upload-hint">hoặc sử dụng các nút bên dưới</div>
+        </div>
+
+        <input type="file" id="fileInput" multiple style="display: none;">
+        <input type="file" id="folderInput" webkitdirectory directory multiple style="display: none;">
+
+        <div style="text-align: center; margin: 1.5rem 0;">
+            <button type="button" class="btn btn-outline" onclick="addFiles()">
+                📄 Thêm Files
+            </button>
+            <button type="button" class="btn btn-outline" onclick="addFolder()">
+                📂 Thêm Folder
+            </button>
+            <button type="button" class="btn btn-outline" onclick="clearAllFiles()" id="clearBtn"
+                style="display: none;">
+                🗑️ Xóa Tất Cả
+            </button>
+        </div>
+
+        <div id="filePreview" style="margin: 1.5rem 0;">
+            <p style="text-align: center; color: #999; padding: 2rem;">Chưa có file nào được chọn</p>
+        </div>
+
+        <div style="text-align: center;">
+            <button type="button" class="btn btn-primary" id="uploadBtn" disabled onclick="testUpload()">
+                📤 Upload Tài Liệu (<span id="fileCount">0</span>)
+            </button>
+        </div>
+
+        <div class="log" id="log">
+            <div class="log-entry log-info">🔧 Waiting for initialization...</div>
+        </div>
+    </div>
+
+    <script src="../assets/js/lab-upload.js"></script>
+
+    <script>
+        // Test upload function
+        function testUpload() {
+            log('Upload button clicked!', 'success');
+            log(`Ready to upload ${selectedFiles.length} files`, 'info');
+            alert(`✅ Test successful! ${selectedFiles.length} files ready to upload`);
+        }
+
+        // Enhanced logging
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            const time = new Date().toLocaleTimeString();
+            entry.textContent = `[${time}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(`[${type.toUpperCase()}]`, message);
+        }
+
+        // Override console.log to show in UI
+        const originalLog = console.log;
+        console.log = function (...args) {
+            originalLog.apply(console, args);
+            log(args.join(' '), 'info');
+        };
+
+        const originalError = console.error;
+        console.error = function (...args) {
+            originalError.apply(console, args);
+            log(args.join(' '), 'error');
+        };
+    </script>
+</body>
+
+</html>

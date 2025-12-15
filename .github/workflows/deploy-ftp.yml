@@ -1,0 +1,36 @@
+name: Deploy to InfinityFree
+on:
+  push:
+    branches:
+      - main
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v4
+    
+    - name: 📂 Sync files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        
+        # --- CÁC DÒNG QUAN TRỌNG ĐỂ FIX LỖI TIMEOUT ---
+        port: 21              # Chỉ định rõ cổng 21
+        protocol: ftp         # Dùng giao thức FTP thường
+        security: loose       # QUAN TRỌNG NHẤT: Tắt SSL để không bị treo khi kết nối
+        timeout: 30000        # Tăng thời gian chờ lên 30 giây (mặc định là thấp hơn)
+        # -----------------------------------------------
+
+        local-dir: ./
+        server-dir: ./htdocs/ 
+        
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/.github/**
+          **/Database/**
+          **/README.md
